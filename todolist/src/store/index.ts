@@ -1,10 +1,14 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import todoList from './modules/todoList'
+import listOfLists from './modules/listsOfTodos'
+import listsAndItemsStates from './modules/historyStates'
 Vue.use(Vuex)
 const store = new Vuex.Store({
   modules: {
-    todoList
+    todoList,
+    listOfLists,
+    listsAndItemsStates
   }
 })
 export default store

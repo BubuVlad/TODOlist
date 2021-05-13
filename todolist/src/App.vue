@@ -22,7 +22,9 @@
         </v-btn>
         <todo-input v-show="formVisible" />
       </v-row>
-      <todo-list />
+      <!-- <template v-for=""></template> -->
+      <list-of-lists />
+      <!-- <todo-list /> -->
     </v-main>
   </v-app>
 </template>
@@ -30,13 +32,15 @@
 <script lang="ts">
 import Vue from 'vue';
 import TodoInput from './components/TodoInput.vue';
-import TodoList from './components/TodoList.vue';
+// import TodoList from './components/TodoList.vue';
+import ListOfLists from './components/ListOfLists.vue';
 
 export default Vue.extend({
   name: 'App',
   components: {
     TodoInput,
-    TodoList
+    // TodoList
+    ListOfLists
   },
   data() {
     return {

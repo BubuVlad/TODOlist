@@ -1,47 +1,36 @@
-import ItemInterface from '@/src/components/interfaces/interfaces';
+import { ItemInterface } from '@/src/components/interfaces/interfaces';
 import { VuexModule, Module, Mutation, Action } from 'vuex-module-decorators'
 
 
 @Module({ namespaced: true, name: 'todoList' })
 class TodoList extends VuexModule {
+  // private listName: string = 'Grocery';
   public todosList: ItemInterface[] = [
     {
       name: 'lolo',
-      category: 'laylay',
+      category: 'Grocery',
       done: false
     },
     {
       name: 'lulu',
-      category: 'lili',
+      category: 'Detergents',
       done: false
     }
   ];
-
   @Mutation
-  public addTodoToList(newItem: ItemInterface): void {
+  public addTodoToList(newItem: ItemInterface): ItemInterface[] {
     this.todosList.push(newItem)
     console.log('Added: ', this.todosList)
+    return this.todosList
   }
 
   @Mutation
-  public removeItemFromTodos(newItem: ItemInterface): void {
+  public removeItemFromTodos(newItem: ItemInterface): ItemInterface[] {
     const index: number = this.todosList.findIndex((e: ItemInterface) => e.name === newItem.name);
     this.todosList[index].done = true;
-    console.log('Removed: ', this.todosList)
-    // this.todosList.splice(index, index >= 0 ? 1 : 0);
+    return this.todosList
   }
 
-  // @Action
-  // public updateTodoList( newItem: ItemInterface, action = 'remove'): void {
-  //   console.log('NewItem: ', newItem)
-  //   console.log('Action: ', action)
-  //   if (action === 'remove') {
-  //     this.context.commit('removeItemFromTodos', newItem);
-  //   } else if (action === 'add') {
-  //     this.context.commit('addTodoToList', newItem);
-  //   }
-  //   // this.context.commit((action == 'remove'?'removeItemFromTodos':'addTodoToList'), newItem)
-  // }
   @Action
   public removeItemFromTodoList( newItem: ItemInterface): void {
       this.context.commit('removeItemFromTodos', newItem);
@@ -49,7 +38,11 @@ class TodoList extends VuexModule {
 
   @Action
   public updateTodoList( newItem: ItemInterface): void {
-      this.context.commit('addTodoToList', newItem);
+    const index = this.todosList.findIndex((e: ItemInterface) => e.name.toLowerCase() === newItem.name.toLowerCase());
+    if (this.todosList[index]) {
+      return
+    }
+    this.context.commit('addTodoToList', newItem);
   }
 }
 export default TodoList
