@@ -24,12 +24,12 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import TodoItem from './TodoItem.vue';
-import { namespace } from 'vuex-class'
-import ItemInterface from './interfaces/interfaces';
+// import { namespace } from 'vuex-class'
+import { ItemInterface } from './interfaces/interfaces';
 
-const list = namespace('todoList');
+// const list = namespace('todoList');
 
 @Component({
   components: {
@@ -37,14 +37,19 @@ const list = namespace('todoList');
   }
 })
 export default class TodoList extends Vue {
-  @list.State
-  public todosList!:ItemInterface[]
+  @Prop() readonly list!: ItemInterface[]
+  // @list.State
+  // public todosList!:ItemInterface[]
   get revertList() {
-    return this.todosList.reverse();
+    // return this.todosList.reverse();
+    if (this.$props['list'].length > 2) {
+      return this.$props['list'].reverse();
+    }
+    return this.$props['list']
   }
 
   mounted() {
-    console.log('lala', this.todosList)
+    console.log('lalaasd', this.revertList)
   }
 
   // computed: {

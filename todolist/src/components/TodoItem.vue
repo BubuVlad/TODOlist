@@ -15,12 +15,6 @@
         mdi-pencil
       </v-icon>
     </v-btn>
-
-
-
-
-
-
     <div v-if="edit">
       <v-form>
         <v-container>
@@ -66,12 +60,6 @@
         </v-container>
     </v-form>
     </div>
-
-
-
-
-
-    
     <v-btn
       v-if="done === false"
         class="ma-5"
@@ -96,7 +84,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
-import ItemInterface from './interfaces/interfaces'
+import { ItemInterface } from './interfaces/interfaces'
 import TodoListModule from '../store/modules/todoList';
 
 @Component
@@ -132,19 +120,11 @@ private edit = false;
 
  updateItem():void {
     let index = this.todoListModule.todosList.findIndex((e: ItemInterface) => e.name === this.$props.name);
-    // this.todoListModule.todosList[index] = 
-    console.log(this.todoListModule.todosList[index])
     let item = this.todoListModule.todosList[index]
     item.name = this.$data.nameEdit;
     item.category = this.$data.categoryEdit;
     this.edit = !this.edit
  }
-
-//  editItem():void {
-//    this.edit = true;
-  //  let index = this.todoListModule.todosList.findIndex((e: ItemInterface) => e.name === this.$props.name);
-  //  this.todoListModule.todosList[index].done = false;
-//  }
 }
 </script>
 
