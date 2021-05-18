@@ -43,15 +43,12 @@ export default class TodoList extends Vue {
   get revertList() {
     // return this.todosList.reverse();
     if (this.$props['list'].length > 2) {
-      // console.log('inside');
       return this.$props['list'].reverse();
     }
-    // console.log('out');
     return this.$props['list']
   }
 
   mounted() {
-    // console.log('lala', this.todosList)
     console.log('lalaasd', this.revertList)
   }
 

@@ -4,23 +4,10 @@ import { VuexModule, Module, Mutation, Action } from 'vuex-module-decorators'
 
 @Module({ namespaced: true, name: 'todoList' })
 class TodoList extends VuexModule {
-  // private listName: string = 'Grocery';
-  public todosList: ItemInterface[] = [
-    {
-      name: 'lolo',
-      category: 'Grocery',
-      done: false
-    },
-    {
-      name: 'lulu',
-      category: 'Detergents',
-      done: false
-    }
-  ];
+  public todosList: ItemInterface[] = [];
   @Mutation
   public addTodoToList(newItem: ItemInterface): ItemInterface[] {
     this.todosList.push(newItem)
-    console.log('Added: ', this.todosList)
     return this.todosList
   }
 
@@ -31,18 +18,28 @@ class TodoList extends VuexModule {
     return this.todosList
   }
 
+  @Mutation
+  public historySetter(newList:ItemInterface[]): void {
+    this.todosList = newList;
+  }
+
+  @Action
+  public setHistoryItemsValues( newList: ItemInterface[]):void {
+    this.context.commit('historySetter', newList);
+  }
+
   @Action
   public removeItemFromTodoList( newItem: ItemInterface): void {
       this.context.commit('removeItemFromTodos', newItem);
   }
 
   @Action
-  public updateTodoList( newItem: ItemInterface): void {
+  public async updateTodoList( newItem: ItemInterface): Promise<void> {
     const index = this.todosList.findIndex((e: ItemInterface) => e.name.toLowerCase() === newItem.name.toLowerCase());
     if (this.todosList[index]) {
       return
     }
-    this.context.commit('addTodoToList', newItem);
+    await this.context.commit('addTodoToList', newItem);
   }
 }
 export default TodoList

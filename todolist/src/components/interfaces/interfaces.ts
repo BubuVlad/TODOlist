@@ -8,14 +8,13 @@ export type ItemInterface = {
 
 export type ListInterface = {
   name: ItemInterface['category'];
+  items: ItemInterface[];
   done: Boolean;
-  // listOfProducts: ItemInterface[]
+  id: string;
 }
 
 export type ListsStateInterface = {
-  itemList: ItemInterface[],
-  listOfLists: ListInterface[],
+  id: string,
+  listItemsStates: ListInterface[],
   indexer: Number
 }
-
-// export default ItemInterface ListInterface

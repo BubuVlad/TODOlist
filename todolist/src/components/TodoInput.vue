@@ -33,11 +33,17 @@
               class="mr-5"
               small
             >Cancel</v-btn>
+            <!-- <v-btn
+              depressed
+              color="primary"
+              small
+              @click="updateState().then((responseId) => updateList(responseId))"
+            >Add item</v-btn> -->
             <v-btn
               depressed
               color="primary"
               small
-              @click="updateList().then((response) => updateState(response))"
+              @click="updateList().then((responseId) => updateState(responseId))"
             >Add item</v-btn>
           </v-col>
         </v-row>
@@ -53,6 +59,8 @@ import { ItemInterface, ListInterface, ListsStateInterface } from './interfaces/
 import TodoListModule from '../store/modules/todoList';
 import ListOfLists from '../store/modules/listsOfTodos';
 import ListsAndItemsStates from '../store/modules/historyStates';
+import uuidv4 from '../plugins/utils'
+import {cloneDeep} from 'lodash';
 
 @Component
 export default class TodoInput extends Vue {
@@ -69,50 +77,76 @@ export default class TodoInput extends Vue {
     }
   }
 
-  mounted(): void {
-    // console.log('STORE : ', this.$store.state.historyList.listsHistoryStates)
-    // const checkerOfItems = this.listsAndItemsStates.listsHistoryStates.findIndex((e:ListsStateInterface) => e['itemList'] === this.todoListModule.todosList)
-    // const checkerOfList = this.listsAndItemsStates.listsHistoryStates.findIndex((e:ListsStateInterface) => e['listOfLists'] === this.listOfLists.listOfLists)
-    // if (!checkerOfItems || !checkerOfList) {
-      // this.historyList.updateListsState({itemList: this.todoListModule.todosList, listOfLists: this.listOfLists.listOfLists} as ListsStateInterface)
+  // freshDataClonned: ListOfLists = {...this.listOfLists.listOfLists}
 
-      this.listsAndItemsStates.updateListsState({itemList: this.todoListModule.todosList, listOfLists: this.listOfLists.listOfLists, indexer: 1} as ListsStateInterface)
-
-    //   console.log('History: ',this.listsAndItemsStates)
-    //   console.log('State din history: ', this.$store.state)
-    //   // console.log('indexush: ', checkerOfItems)
-    // }
-  }
-
-  async updateList(): Promise<boolean> {
+  async updateList(): Promise<string> {
     const listIndex = this.listOfLists.listOfLists.findIndex((e: ListInterface) => e.name.toLowerCase() === this.$data.category.toLowerCase())
     const itemInList = this.todoListModule.todosList.findIndex((e: ItemInterface) => e.name.toLowerCase() === this.$data.name.toLowerCase())
-    let action = false;
+
+    let action = '';
+    // console.log('Data: ', this.$data)
     if (!this.listOfLists.listOfLists[listIndex] && !this.todoListModule.todosList[itemInList]) {
-      this.listOfLists.updateListOfLists({name: this.$data.category, done: false} as ListInterface);
-      action = true;
+      const createId = uuidv4();
+      await this.todoListModule.updateTodoList({name: this.$data.name, category: this.$data.category, done: false} as ItemInterface);
+      await this.listOfLists.updateListOfLists({
+        name: this.$data.category,
+        done: false,
+        id: createId,
+        items: [{
+          category: this.$data.category,
+          name: this.$data.name,
+          done: false
+          }]});
+      action = createId;
+    } else if (!this.todoListModule.todosList[itemInList]) {
+      await this.todoListModule.updateTodoList({name: this.$data.name, category: this.$data.category, done: false} as ItemInterface);
+       await this.listOfLists.addItemInExistingListAction({
+          category: this.$data.category,
+          name: this.$data.name,
+          done: false
+          });
+      // action = true;
     }
-    if (!this.todoListModule.todosList[itemInList]) {
-      this.todoListModule.updateTodoList({name: this.$data.name, category: this.$data.category, done: false} as ItemInterface);
-      action = true;
-    }
-    console.log(this)
-    // if (action === true) {
-      // this.listsAndItemsStates.updateListsState({itemList: this.todoListModule.todosList, listOfLists: this.listOfLists.listOfLists, indexer: ++this.listsAndItemsStates.listsHistoryStates.length} as ListsStateInterface)
-    // }
+
+    // console.log('List of lists 2: ', this.listOfLists.listOfLists)
+    // console.log('Todo list Module 2: ', this.todoListModule.todosList)
+
     return action
   }
 
-  updateState(response: boolean): void {
-    if (response === true) {
-      this.listsAndItemsStates.updateListsState({itemList: this.todoListModule.todosList, listOfLists: this.listOfLists.listOfLists, indexer: this.listsAndItemsStates.listsHistoryStates.length} as ListsStateInterface)
-    }
-  }
+  async updateState(responseId:string):Promise<void> {
+    // const clonedLists = {...this.listOfLists.listOfLists}
+    // console.log('this.listOfLists.listOfLists): ', this.listOfLists.listOfLists)
+    // console.log('this.listsAndItemsStates.listsHistoryStates :  ', this.listsAndItemsStates.listsHistoryStates)
+    // console.log('Destructured: ', this.listsAndItemsStates.listsHistoryStates.find((e:ListsStateInterface) => e.id === responseId))
+    
+    // const listInHistoriesList:ListInterface[] = this.listsAndItemsStates.listsHistoryStates.find((e:ListsStateInterface) => e.id === responseId)
 
-  // resetData(): void {
-  //   this.$data.name = '';
-  //   this.$data.category = '';
-  // }
+    if (responseId) {
+      await this.listsAndItemsStates.updateListsArray({
+        id: responseId,
+        // listItemsStates: [...listInHistoriesList, this.listOfLists.listOfLists.find((e:ListInterface) => e.id === responseId)!],
+        listItemsStates: [cloneDeep(this.listOfLists.listOfLists.find((e:ListInterface) => e.id === responseId))!],
+        indexer: 0
+        })
+    } else {
+      this.listsAndItemsStates.listsHistoryStates.forEach((e:ListsStateInterface): void => {
+        const value = cloneDeep(this.listOfLists.listOfLists.find((i:ListInterface) => i.id === e.id)!);
+        const thisListFromHistory = e.listItemsStates.findIndex((u:ListInterface) => JSON.stringify(u.items) === JSON.stringify(value.items))
+        if(thisListFromHistory < 0) {
+          this.listsAndItemsStates.updateList(value);
+        }
+      })
+      // await this.listsAndItemsStates.updateList({
+      //   id: ,
+      //   listItemsStates: [...listInHistoriesList, this.listOfLists.listOfLists.find((e:ListInterface) => e.id === responseId)!],
+      //   indexer: 1
+      //   })
+    }
+      console.log('History: ', this.listsAndItemsStates.listsHistoryStates)
+
+      // return createId
+  }
 }
 </script>
 
