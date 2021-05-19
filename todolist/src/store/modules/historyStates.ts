@@ -1,4 +1,4 @@
-import { ItemInterface, ListInterface, ListsStateInterface } from '@/src/components/interfaces/interfaces';
+import { ListInterface, ListsStateInterface } from '@/src/components/interfaces/interfaces';
 import { VuexModule, Module, Mutation, Action } from 'vuex-module-decorators'
 
 
@@ -20,11 +20,19 @@ class ListsAndItemsStates extends VuexModule {
     console.log('Inside mutation: ', this.listsHistoryStates[listIndex])
   }
 
-  // @Mutation
-  // public addItemToCurrentState(newState: ListInterface):void {
-  //   const listIndex = this.listsHistoryStates.findIndex((e:ListsStateInterface) => e.id === newState.id)
-  //   this.listsHistoryStates[listIndex].listItemsStates[newState.indexer].push(newState.items)
-  // }
+  @Mutation
+  public setPrevIndexerOnSelectedList(listData: ListsStateInterface):void {
+    const listIndex = this.listsHistoryStates.findIndex((e:ListsStateInterface) => e.id === listData.id)
+    const indexer = +this.listsHistoryStates[listIndex].indexer - 1
+    this.listsHistoryStates[listIndex].indexer = indexer
+  }
+
+  @Mutation
+  public setNextIndexerOnSelectedList(listData: ListsStateInterface):void {
+    const listIndex = this.listsHistoryStates.findIndex((e:ListsStateInterface) => e.id === listData.id)
+    const indexer = +this.listsHistoryStates[listIndex].indexer + 1
+    this.listsHistoryStates[listIndex].indexer = indexer
+  }
 
   @Action
   public updateListsArray( newState: ListsStateInterface): void {
@@ -37,9 +45,14 @@ class ListsAndItemsStates extends VuexModule {
     this.context.commit('addStateToListHistory', newState);
   }
 
-  // @Action
-  // public updateListsStatesItems( listItems: ListsStateInterface): void {
-  //   this.context.commit('addStateToListHistory', listItems);
-  // }
+  @Action
+  public previousState( listItems: ListsStateInterface): void {
+    this.context.commit('setPrevIndexerOnSelectedList', listItems);
+  }
+
+  @Action
+  public nextState( listItems: ListsStateInterface): void {
+    this.context.commit('setNextIndexerOnSelectedList', listItems);
+  }
 }
 export default ListsAndItemsStates

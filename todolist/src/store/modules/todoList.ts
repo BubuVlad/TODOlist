@@ -20,6 +20,7 @@ class TodoList extends VuexModule {
 
   @Mutation
   public historySetter(newList:ItemInterface[]): void {
+    const arrayOfItems = this.todosList.map((el:ItemInterface) => el.category === newList[0].category)
     this.todosList = newList;
   }
 
@@ -40,6 +41,11 @@ class TodoList extends VuexModule {
       return
     }
     await this.context.commit('addTodoToList', newItem);
+  }
+
+  @Action
+  public async updateItems( newItems: ItemInterface[]): Promise<void> {
+    await this.context.commit('historySetter', newItems)
   }
 }
 export default TodoList

@@ -24,8 +24,23 @@ class ListOfLists extends VuexModule {
   }
 
   @Mutation
-  public historySetter(newList:ListInterface[]): void {
-    this.listOfLists = newList;
+  public historySetter(newList:ListInterface): void {
+    this.listOfLists.forEach(list => {
+      if(list.id === newList.id) {
+        console.log('List to replace', list)
+      }
+    })
+    console.log('List done replace: ', newList)
+    // const index = this.listOfLists.findIndex((el:ListInterface) => el.id === newList.id)
+    // this.listOfLists[index] = newList
+
+    this.listOfLists = this.listOfLists.map(list => {
+      if(list.id === newList.id) {
+        return newList
+      } else {
+        return list
+      }
+    })
   }
 
   @Action
@@ -46,6 +61,11 @@ class ListOfLists extends VuexModule {
   @Action
   public addItemInExistingListAction( newItem: ItemInterface): void {
     this.context.commit('addItemInExistingList', newItem)
+  }
+
+  @Action
+  public setterCurrentListFromHistory ( newItem: ListInterface ): void {
+    this.context.commit('historySetter', newItem)
   }
 }
 
