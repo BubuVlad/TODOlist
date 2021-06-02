@@ -11,6 +11,7 @@ export default class DataAdapter implements AdapterType {
 
     let result:DetectType|MyError = new MyError('Not supported type!');
 
+    //Pattern pentru un for cu async inauntru: algorithm async in for
     const promises = typesArray.map(type => {
       return new Promise((resolve, reject) => {
         this.isType({type, data}).then((typeOrError) => {

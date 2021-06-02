@@ -147,7 +147,7 @@ export default class ItemImporterForFileList extends Vue {
 
   //Checker for item type
   isItem(data:any):boolean {
-    if (data.category && data.nameOf && data.done) {
+    if (data.category && data.nameOf && data.done !== undefined) {
       return true
     }
     return false
@@ -155,6 +155,7 @@ export default class ItemImporterForFileList extends Vue {
 
   //Checker for item type
   isArrayOfItem(data:any):boolean {
+    console.log('DATA inside: ', data)
     let result = true
     data.forEach((el:any) => {
       if (!this.isItem(el)) {
@@ -212,6 +213,7 @@ export default class ItemImporterForFileList extends Vue {
 
     if (response.type === AcceptedDataTypes.JSON) {
       response.data.forEach((element:ListInterface|ItemInterface|ItemInterface[]): void => {
+
         console.log('ELEMENT: ', element)
         // const listExist = {
         //   exists: false,
@@ -226,53 +228,10 @@ export default class ItemImporterForFileList extends Vue {
           if (listInLists >= 0) {
             const listTypeConvertor =  elementList as ListInterface
              this.populateLists(listTypeConvertor.items as ItemInterface[])
-            // listTypeConvertor.items.forEach((item:ItemInterface) => {
-            //     //Check daca exista lista de pe 'item category prop'
-            //     const searchIfListExists = this.listOfLists.listOfLists.findIndex((el:ListInterface) => el.nameOf === item.category)!
-            //     //Exista lista
-            //     if (searchIfListExists >= 0 && !this.listOfLists.listOfLists[searchIfListExists].items.find((el:ItemInterface) => el.nameOf === item.nameOf)) {
-            //       this.createItems(item).then(() => {
-            //         this.listOfLists.addItemInExistingListAction(item)
-            //         })
-            //         //Nu exista
-            //     } else {
-            //       this.createList(element.nameOf).then(() => {
-            //         this.createItems(item).then(() => {
-            //           this.listOfLists.addItemInExistingListAction(item)
-            //         })
-            //       })
-            //     }
-            //       //Daca da adaugam item
-
-            //       //Daca nu, creem lista si adaugam item
-            //   })
-            //Existing list index according to list name
-            // listExist.indexOfExistingList = listInLists
-            // listExist.exists = true;
           } else {
             this.createList(elementList.nameOf).then(()=> {
               const listTypeConvertor =  elementList as ListInterface
                this.populateLists(listTypeConvertor.items as ItemInterface[])
-              // listTypeConvertor.items.forEach((item:ItemInterface) => {
-              //   //Check daca exista lista de pe 'item category prop'
-              //   const searchIfListExists = this.listOfLists.listOfLists.findIndex((el:ListInterface) => el.nameOf === item.category)!
-              //   //Exista lista
-              //   if (searchIfListExists >= 0 && !this.listOfLists.listOfLists[searchIfListExists].items.find((el:ItemInterface) => el.nameOf === item.nameOf)) {
-              //     this.createItems(item).then(() => {
-              //       this.listOfLists.addItemInExistingListAction(item)
-              //       })
-              //       //Nu exista
-              //   } else {
-              //     this.createList(element.nameOf).then(() => {
-              //       this.createItems(item).then(() => {
-              //         this.listOfLists.addItemInExistingListAction(item)
-              //       })
-              //     })
-              //   }
-              //     //Daca da adaugam item
-
-              //     //Daca nu, creem lista si adaugam item
-              // })
             });
           }
         } else if (this.isItem(element)) {
