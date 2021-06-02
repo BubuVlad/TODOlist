@@ -7,6 +7,20 @@
     >
     </v-app-bar>
     <v-main class="mt-5">
+      <v-row>
+        <v-col cols="12">
+          <v-layout>
+            <v-flex>
+              <item-importer-for-file-list />
+            </v-flex>
+          </v-layout>
+           <v-layout class="mt-4">
+            <v-flex>
+              <item-exporter-for-file-list />
+            </v-flex>
+          </v-layout>
+        </v-col>
+      </v-row>
       <v-row class="mx-2 my-5">
         <v-btn
           class="mx-2"
@@ -32,19 +46,22 @@
 <script lang="ts">
 import Vue from 'vue';
 import TodoInput from './components/TodoInput.vue';
-// import TodoList from './components/TodoList.vue';
 import ListOfLists from './components/ListOfLists.vue';
+import ItemImporterForFileList from './components/ItemImporter.vue';
+import ItemExporterForFileList from './components/ItemListExporter.vue';
 
 export default Vue.extend({
   name: 'App',
   components: {
     TodoInput,
-    // TodoList
-    ListOfLists
+    ListOfLists,
+    ItemImporterForFileList,
+    ItemExporterForFileList
   },
   data() {
     return {
-      formVisible: false
+      formVisible: false,
+      showModalImporter: false
     }
   }
 });

@@ -11,7 +11,7 @@
             <v-text-field
               label="Item name"
               solo
-              v-model="name"
+              v-model="nameOf"
             ></v-text-field>
           </v-col>
           <v-col
@@ -33,12 +33,6 @@
               class="mr-5"
               small
             >Cancel</v-btn>
-            <!-- <v-btn
-              depressed
-              color="primary"
-              small
-              @click="updateState().then((responseId) => updateList(responseId))"
-            >Add item</v-btn> -->
             <v-btn
               depressed
               color="primary"
@@ -71,61 +65,59 @@ export default class TodoInput extends Vue {
 
   data(): ItemInterface {
     return {
-      name : '',
+      nameOf : '',
       category : '',
       done: false
     }
   }
 
-  // freshDataClonned: ListOfLists = {...this.listOfLists.listOfLists}
-
   async updateList(): Promise<string> {
-    const listIndex = this.listOfLists.listOfLists.findIndex((e: ListInterface) => e.name.toLowerCase() === this.$data.category.toLowerCase())
-    const itemInList = this.todoListModule.todosList.findIndex((e: ItemInterface) => e.name.toLowerCase() === this.$data.name.toLowerCase())
-
+    const listIndex = this.listOfLists.listOfLists.findIndex((e: ListInterface) => e.nameOf.toLowerCase() === this.$data.category.toLowerCase())
+    const itemInList = this.todoListModule.todosList.findIndex((e: ItemInterface) => e.nameOf.toLowerCase() === this.$data.nameOf.toLowerCase())
     let action = '';
-    // console.log('Data: ', this.$data)
+    //needs to be true
+    const listChecker = this.listOfLists.listOfLists.findIndex((el:ListInterface) => el.nameOf === this.$data.category)
+    if (listChecker >= 0) {
+      const idOfList = this.listOfLists.listOfLists[listChecker].id
+      const historyList = this.listsAndItemsStates.listsHistoryStates.findIndex((el: ListsStateInterface) => el.id === idOfList)
+  
+      //needs to be less then length
+      const indexOfHistory = this.listsAndItemsStates.listsHistoryStates[historyList].indexer
+      const lengthOfStatesOfListOnHistory = this.listsAndItemsStates.listsHistoryStates[historyList].listItemsStates.length
+  
+      if ( indexOfHistory < lengthOfStatesOfListOnHistory - 1) {
+        await this.listsAndItemsStates.removeState(this.listsAndItemsStates.listsHistoryStates[historyList])
+      }
+    }
+
     if (!this.listOfLists.listOfLists[listIndex] && !this.todoListModule.todosList[itemInList]) {
       const createId = uuidv4();
-      await this.todoListModule.updateTodoList({name: this.$data.name, category: this.$data.category, done: false} as ItemInterface);
+      await this.todoListModule.updateTodoList({nameOf: this.$data.nameOf, category: this.$data.category, done: false} as ItemInterface);
       await this.listOfLists.updateListOfLists({
-        name: this.$data.category,
+        nameOf: this.$data.category,
         done: false,
         id: createId,
         items: [{
           category: this.$data.category,
-          name: this.$data.name,
+          nameOf: this.$data.nameOf,
           done: false
           }]});
       action = createId;
     } else if (!this.todoListModule.todosList[itemInList]) {
-      await this.todoListModule.updateTodoList({name: this.$data.name, category: this.$data.category, done: false} as ItemInterface);
+      await this.todoListModule.updateTodoList({nameOf: this.$data.nameOf, category: this.$data.category, done: false} as ItemInterface);
        await this.listOfLists.addItemInExistingListAction({
           category: this.$data.category,
-          name: this.$data.name,
+          nameOf: this.$data.nameOf,
           done: false
           });
-      // action = true;
     }
-
-    // console.log('List of lists 2: ', this.listOfLists.listOfLists)
-    // console.log('Todo list Module 2: ', this.todoListModule.todosList)
-
     return action
   }
 
   async updateState(responseId:string):Promise<void> {
-    // const clonedLists = {...this.listOfLists.listOfLists}
-    // console.log('this.listOfLists.listOfLists): ', this.listOfLists.listOfLists)
-    // console.log('this.listsAndItemsStates.listsHistoryStates :  ', this.listsAndItemsStates.listsHistoryStates)
-    // console.log('Destructured: ', this.listsAndItemsStates.listsHistoryStates.find((e:ListsStateInterface) => e.id === responseId))
-    
-    // const listInHistoriesList:ListInterface[] = this.listsAndItemsStates.listsHistoryStates.find((e:ListsStateInterface) => e.id === responseId)
-
     if (responseId) {
       await this.listsAndItemsStates.updateListsArray({
         id: responseId,
-        // listItemsStates: [...listInHistoriesList, this.listOfLists.listOfLists.find((e:ListInterface) => e.id === responseId)!],
         listItemsStates: [cloneDeep(this.listOfLists.listOfLists.find((e:ListInterface) => e.id === responseId))!],
         indexer: 0
         })
@@ -137,15 +129,7 @@ export default class TodoInput extends Vue {
           this.listsAndItemsStates.updateList(value);
         }
       })
-      // await this.listsAndItemsStates.updateList({
-      //   id: ,
-      //   listItemsStates: [...listInHistoriesList, this.listOfLists.listOfLists.find((e:ListInterface) => e.id === responseId)!],
-      //   indexer: 1
-      //   })
     }
-      console.log('History: ', this.listsAndItemsStates.listsHistoryStates)
-
-      // return createId
   }
 }
 </script>

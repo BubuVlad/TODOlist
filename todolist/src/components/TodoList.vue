@@ -5,7 +5,7 @@
       <ul>
         <template v-for="(item, index) in revertList">
         <li :key="index" v-if="item.done !== true">
-          <todo-item v-bind:done="item.done" v-bind:name="item.name" v-bind:category="item.category"/>
+          <todo-item v-bind:done="item.done" v-bind:nameOf="item.nameOf" v-bind:category="item.category"/>
         </li>
         </template>
       </ul>
@@ -15,7 +15,7 @@
       <ul>
         <template v-for="(item, index) in revertList">
           <li :key="index" v-if="item.done === true">
-          <todo-item v-bind:done="item.done" v-bind:name="item.name" v-bind:category="item.category"/>
+          <todo-item v-bind:done="item.done" v-bind:nameOf="item.nameOf" v-bind:category="item.category"/>
           </li>
         </template>
       </ul>

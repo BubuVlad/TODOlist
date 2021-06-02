@@ -13,11 +13,20 @@ class ListsAndItemsStates extends VuexModule {
   }
 
   @Mutation
+  public removeStateFromHistory(list: ListsStateInterface) {
+    const history = this.listsHistoryStates.findIndex((e:ListsStateInterface) => e.id === list.id)
+    this.listsHistoryStates[history].listItemsStates.forEach(element => {
+      if(this.listsHistoryStates[history].listItemsStates.indexOf(element) > this.listsHistoryStates[history].indexer) {
+        this.listsHistoryStates[history].listItemsStates.pop()
+      }
+    });
+  }
+
+  @Mutation
   public addStateToListHistory(newState: ListInterface): void {
     const listIndex = this.listsHistoryStates.findIndex((e:ListsStateInterface) => e.id === newState.id)
     this.listsHistoryStates[listIndex].listItemsStates.push(newState)
     this.listsHistoryStates[listIndex].indexer = this.listsHistoryStates[listIndex].listItemsStates.length - 1
-    console.log('Inside mutation: ', this.listsHistoryStates[listIndex])
   }
 
   @Mutation
@@ -41,7 +50,6 @@ class ListsAndItemsStates extends VuexModule {
 
   @Action
   public updateList(newState: ListInterface):void {
-    console.log('UpdateList param: ', newState)
     this.context.commit('addStateToListHistory', newState);
   }
 
@@ -53,6 +61,11 @@ class ListsAndItemsStates extends VuexModule {
   @Action
   public nextState( listItems: ListsStateInterface): void {
     this.context.commit('setNextIndexerOnSelectedList', listItems);
+  }
+
+  @Action
+  public removeState( listItems: ListsStateInterface): void {
+    this.context.commit('removeStateFromHistory', listItems);
   }
 }
 export default ListsAndItemsStates

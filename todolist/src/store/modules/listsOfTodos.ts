@@ -13,27 +13,18 @@ class ListOfLists extends VuexModule {
 
   @Mutation
   public addItemInExistingList(newItem: ItemInterface): void {
-    const listIndex = this.listOfLists.findIndex((e: ListInterface) => e.name === newItem.category)
+    const listIndex = this.listOfLists.findIndex((e: ListInterface) => e.nameOf === newItem.category)
     this.listOfLists[listIndex].items.push(newItem)
   }
 
   @Mutation
   public removeList(newItem: ListInterface): void {
-    const index: number = this.listOfLists.findIndex((e: ListInterface) => e.name === newItem.name);
+    const index: number = this.listOfLists.findIndex((e: ListInterface) => e.nameOf === newItem.nameOf);
     this.listOfLists[index].done = true;
   }
 
   @Mutation
   public historySetter(newList:ListInterface): void {
-    this.listOfLists.forEach(list => {
-      if(list.id === newList.id) {
-        console.log('List to replace', list)
-      }
-    })
-    console.log('List done replace: ', newList)
-    // const index = this.listOfLists.findIndex((el:ListInterface) => el.id === newList.id)
-    // this.listOfLists[index] = newList
-
     this.listOfLists = this.listOfLists.map(list => {
       if(list.id === newList.id) {
         return newList
@@ -61,6 +52,22 @@ class ListOfLists extends VuexModule {
   @Action
   public addItemInExistingListAction( newItem: ItemInterface): void {
     this.context.commit('addItemInExistingList', newItem)
+  }
+
+  @Action
+  public async addItemWithCheckOfList(data: {index: number, item: ItemInterface, idForList: string}):Promise<void> {
+    if (data.index < 0) {
+      await this.context.commit('addNewList', { 
+        nameOf: data.item.category,
+        items: [],
+        done: Boolean,
+        id: data.idForList})
+        await this.context.commit( 'addItemInExistingList', data.item as ItemInterface)
+    } else {
+      if (this.listOfLists[data.index].items.findIndex((item:ItemInterface) => item.nameOf === data.item.nameOf) < 0) {
+        this.context.commit( 'addItemInExistingList', data.item as ItemInterface)
+      }
+    }
   }
 
   @Action

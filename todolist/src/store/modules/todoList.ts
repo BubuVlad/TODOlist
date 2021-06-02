@@ -12,15 +12,13 @@ class TodoList extends VuexModule {
   }
 
   @Mutation
-  public removeItemFromTodos(newItem: ItemInterface): ItemInterface[] {
-    const index: number = this.todosList.findIndex((e: ItemInterface) => e.name === newItem.name);
+  public removeItemFromTodos(newItem: ItemInterface): void {
+    const index: number = this.todosList.findIndex((e: ItemInterface) => e.nameOf === newItem.nameOf);
     this.todosList[index].done = true;
-    return this.todosList
   }
 
   @Mutation
   public historySetter(newList:ItemInterface[]): void {
-    const arrayOfItems = this.todosList.map((el:ItemInterface) => el.category === newList[0].category)
     this.todosList = newList;
   }
 
@@ -36,7 +34,7 @@ class TodoList extends VuexModule {
 
   @Action
   public async updateTodoList( newItem: ItemInterface): Promise<void> {
-    const index = this.todosList.findIndex((e: ItemInterface) => e.name.toLowerCase() === newItem.name.toLowerCase());
+    const index = this.todosList.findIndex((e: ItemInterface) => e.nameOf.toLowerCase() === newItem.nameOf.toLowerCase());
     if (this.todosList[index]) {
       return
     }

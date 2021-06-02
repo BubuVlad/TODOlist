@@ -1,20 +1,52 @@
 // import TodoList from "@/src/store/modules/todoList"
 
+export enum AcceptedDataTypes { 'XML' = 'XML', 'JSON' = 'JSON' }
+
+
 export type ItemInterface = {
-  name: string;
+  nameOf: string;
   category: string;
-  done: Boolean;
+  done: boolean;
 }
 
 export type ListInterface = {
-  name: ItemInterface['category'];
+  nameOf: ItemInterface['category'];
   items: ItemInterface[];
-  done: Boolean;
+  done: boolean;
   id: string;
 }
 
 export type ListsStateInterface = {
   id: string,
   listItemsStates: ListInterface[],
-  indexer: Number
+  indexer: number
+}
+
+export type ObjectData = {
+  data: ListInterface[]|ItemInterface[];
+  type: AcceptedDataTypes
+}
+
+export type DetectType = AcceptedDataTypes|MyError
+
+export interface IsTypeProps {
+  type: AcceptedDataTypes,
+  data: string
+}
+
+export interface BuilderTypeToObjectProps {
+  data: string
+}
+
+export class MyError {
+  public message: string
+  constructor(message:string) {
+   this.message = message;
+ }
+}
+
+export interface AdapterType {
+  builderTypeToObject: (props: BuilderTypeToObjectProps) => Promise<ObjectData|MyError>;
+  builderObjectToType: (props: ObjectData) => IsTypeProps;
+  isType: (props: IsTypeProps) => Promise<boolean|MyError>;
 }

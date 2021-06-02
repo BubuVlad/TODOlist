@@ -1,7 +1,7 @@
 <template>
   <div>
     <h3>Item</h3>
-    <h4>nume: {{ name }}</h4>
+    <h4>nume: {{ nameOf }}</h4>
     <h5>Category: {{ category }}</h5>
     <v-btn
       class="mx-2"
@@ -89,14 +89,14 @@ import TodoListModule from '../store/modules/todoList';
 
 @Component
 export default class TodoItem extends Vue {
- @Prop({type: String, default: 'Random Name'}) readonly name!: string
+ @Prop({type: String, default: 'Random Name'}) readonly nameOf!: string
  @Prop({type: String, default: 'Random Category'}) readonly category!: string
  @Prop({type: Boolean, default: false}) readonly done!: boolean
  todoListModule: TodoListModule = getModule(TodoListModule, this.$store);
 
  data() {
    return {
-     nameEdit: this.$props['name'],
+     nameEdit: this.$props['nameOf'],
      categoryEdit: this.$props['category'],
      doneEdit: this.$props['done']
    }
@@ -107,21 +107,21 @@ private edit = false;
 
  remove():void {
      this.todoListModule.removeItemFromTodoList({
-       name: this.$props['name'],
+       nameOf: this.$props['nameOf'],
        category: this.$props['category'],
        done: this.$props['done']
      })
    }
 
  addItem():void {
-  let index = this.todoListModule.todosList.findIndex((e: ItemInterface) => e.name === this.$props.name);
+  let index = this.todoListModule.todosList.findIndex((e: ItemInterface) => e.nameOf === this.$props.nameOf);
   this.todoListModule.todosList[index].done = false;
  }
 
  updateItem():void {
-    let index = this.todoListModule.todosList.findIndex((e: ItemInterface) => e.name === this.$props.name);
+    let index = this.todoListModule.todosList.findIndex((e: ItemInterface) => e.nameOf === this.$props.nameOf);
     let item = this.todoListModule.todosList[index]
-    item.name = this.$data.nameEdit;
+    item.nameOf = this.$data.nameEdit;
     item.category = this.$data.categoryEdit;
     this.edit = !this.edit
  }
