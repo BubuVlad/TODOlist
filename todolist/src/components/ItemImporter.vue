@@ -83,7 +83,6 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { getModule } from 'vuex-module-decorators';
-// import FileList from '../store/modules/filesList';
 import {validadeXMLTags, jsontoxmlBuilder} from '../plugins/xmlObjBuilder'
 import {cloneDeep, forEach} from 'lodash';
 import jsonObjBuilder from '../plugins/jsonObjBuilder'
@@ -102,9 +101,7 @@ export default class ItemImporterForFileList extends Vue {
   
   data(): Record<string, unknown> {
     return {
-      // importedItem_nameOf: '',
       importedItem_TextValue: '',
-      // importedItem_ListnameOf: '',
       loadingData: false,
       dialog: false,
       fileType: String
@@ -113,8 +110,6 @@ export default class ItemImporterForFileList extends Vue {
 
   resetData():void {
     this.$data.importedItem_TextValue = ''
-    // this.$data.importedItem_ListnameOf = ''
-    // this.$data.importedItem_nameOf = ''
   }
 
   async createList(data:string):Promise<void> {
@@ -126,8 +121,6 @@ export default class ItemImporterForFileList extends Vue {
         items: []
     });
   }
-
-  // await this.todoListModule.updateTodoList({nameOf: this.$data.nameOf, category: this.$data.category, done: false} as ItemInterface);
 
   async createItems(data:ItemInterface): Promise<void> {
     console.log("Create ITEMS with: ", data)
@@ -155,7 +148,6 @@ export default class ItemImporterForFileList extends Vue {
 
   //Checker for item type
   isArrayOfItem(data:any):boolean {
-    console.log('DATA inside: ', data)
     let result = true
     data.forEach((el:any) => {
       if (!this.isItem(el)) {
@@ -171,12 +163,6 @@ export default class ItemImporterForFileList extends Vue {
     listOfTotosToPopulateList.forEach((item:ItemInterface) => {
       //Check daca exista lista de pe 'item category prop'
       const searchIfListExists = this.listOfLists.listOfLists.findIndex((el:ListInterface) => el.nameOf === item.category)
-      // let searchIfItemExistInExistingList:number;
-      // if ( searchIfListExists >= 0) {
-      //   searchIfItemExistInExistingList = this.listOfLists.listOfLists[searchIfListExists].items.findIndex((el:ItemInterface) => el.nameOf === item.nameOf)
-      // } else {
-
-      // }
       //Exista lista
       if (searchIfListExists >= 0 ) {
         if (this.listOfLists.listOfLists[searchIfListExists].items.findIndex((el:ItemInterface) => el.nameOf === item.nameOf) < 0) {
@@ -188,9 +174,6 @@ export default class ItemImporterForFileList extends Vue {
       } else if (searchIfListExists < 0) {
         this.createList(item.category).then(() => this.createItems(item)).then(() => this.listOfLists.addItemInExistingListAction(item))
       }
-        //Daca da adaugam item
-
-        //Daca nu, creem lista si adaugam item
     })
   }
   
@@ -200,25 +183,13 @@ export default class ItemImporterForFileList extends Vue {
     this.$data.loadingData = true;
    
     const text = this.$data.importedItem_TextValue;
-    console.log('TEXT: ', text)
-    // const regexXML = /(<.[^(><.)]+>)/g;
-    // let errorMessage = '';
     const adapter = new DataAdapter()
 
     const response = await adapter.builderTypeToObject({ data: text })
 
-
-    console.log('RESPONSE: ', response)
-
-
     if (response.type === AcceptedDataTypes.JSON) {
       response.data.forEach((element:ListInterface|ItemInterface|ItemInterface[]): void => {
 
-        console.log('ELEMENT: ', element)
-        // const listExist = {
-        //   exists: false,
-        //   indexOfExistingList: -1
-        // };
         //Check if its ListInterface
         if ( this.isListOfList(element)) {
           const elementList = (element as ListInterface)!
@@ -237,230 +208,15 @@ export default class ItemImporterForFileList extends Vue {
         } else if (this.isItem(element)) {
           const item = (element as ItemInterface)!
           //Existing list index according to item category
-          // const listInLists = this.listOfLists.listOfLists.findIndex((el:ListInterface) => el.nameOf === item.category)!
 
           this.populateLists([item])
-          // listExist.indexOfExistingList = listInLists
-          console.log('False, sunt iteme!')
+
         } else if (this.isArrayOfItem(element)) {
           const items = (element as ItemInterface[])!
           this.populateLists(items)
         }
-
-        // const listInLists = this.listOfLists.listOfLists.findIndex((el:ListInterface) => el.nameOf === element.nameOf)!
-
-        // create new List
-        // if (!listExist.exists) {
-        //   this.createList(element.nameOf);
-        // } 
-  
-        // let data = {
-        //   index: +listInLists,
-        //   item: element,
-        //   idForList: uuidv4()
-        // }
       })
     } 
-        // this.listOfLists.addItemWithCheckOfList(data);
-        //       // this.listOfLists.addItemInExistingListAction(data)
-        //       this.createItems(element)
-        //     // }
-        //   })
-        // } else {
-        //   response.forEach((element:ListInterface|ItemInterface) => {
-    
-        //     console.log('Element: ', element)
-        //     const indexOFExistingListInListsOfList = this.listOfLists.listOfLists.findIndex((el:ListInterface) => el.nameOf === element.nameOf)
-        //     console.log('indexOFExistingListInListsOfList: ', indexOFExistingListInListsOfList)
-    
-        //     //CASE LISTS - too
-        //     if (indexOFExistingListInListsOfList >= 0) {
-        //       console.log('Exista')
-        //       console.log('Lista indexOFExistingListInListsOfList:', this.listOfLists.listOfLists[indexOFExistingListInListsOfList])
-        //       const newList:ListInterface = this.listOfLists.listOfLists.find((el:ListInterface) => el.nameOf === element.nameOf)!
-        //       const setTypeToElement = element as ListInterface
-              
-        //       setTypeToElement.items.forEach((u:ItemInterface) => {
-        //         if ((newList.items.findIndex((el) => el.nameOf === u.nameOf)) < 0) {
-        //           this.createItems(u)
-        //           newList.items.push(u)
-        //         }
-        //       });
-        //     } else {
-        //       //Daca nu exista lista se creaza si se pun itemele aferente
-        //       this.createList(element.nameOf);
-        //       const cloneList = cloneDeep(element as ListInterface)
-    
-        //       const newList:ListInterface = this.listOfLists.listOfLists.find((el:ListInterface) => el.nameOf === element.nameOf)!
-        //       cloneList.items.forEach((el:ItemInterface) => {
-        //         this.createItems(el)
-        //         newList.items.push(el)
-        //       })
-        //     }
-        //   });
-          
-        // }
-
-
-
-
-
-
-
-
-
-      // if (response === true) {
-      //   console.log('JSOOOON')
-      // }
-
-    // if (adapter.isType({data: text, type: AcceptedDataTypes.JSON})) {
-    //   const response = await adapter.builderTypeToObject({data: text, type: AcceptedDataTypes.JSON})
-    //   if (response === true) {
-    //     console.log('JSOOOON')
-    //   }
-    // } else if (adapter.isType({data: text, type: AcceptedDataTypes.XML})) {
-    //   const response = await adapter.builderTypeToObject({data: text, type: AcceptedDataTypes.JSON})
-    //   if (response === true) {
-    //     console.log('XMMMMML')
-    //   }
-    // }
-
-
-
-
-
-
-
-
-
-   
-    //JSON - validate and OBJ builder
-    // if ((/^[\],:{}\s]*$/).test(text.replace(/\\["\\/bfnrtu]/g, '@').
-    //   replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+,-]?\d+)?/g, ']').
-    //   replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
-
-    //   const dataJson = jsonObjBuilder(text)
-
-    //   if ( dataJson.error === false ) {
-    //     this.$data.fileType = 'JSON'
-    //     this.$data.importedItem_TextValue = cloneDeep(dataJson.response)
-    //   } else {
-    //     errorMessage = `${dataJson.response}`;
-    //   }
-
-    // //XML - validate and OBJ builder
-    // } else if (regexXML.test(text)){     
-    //   const dataXML = await validadeXMLTags(text)
-    //   console.log('XML inside ITEMPORTER: ', dataXML.responseObj)
-    //   if ( dataXML.error === false ) {
-    //     this.$data.fileType = 'XML'
-    //     this.$data.importedItem_TextValue = cloneDeep(dataXML.responseObj)
-    //   } else {
-    //     errorMessage = `${dataXML.responseObj}`;
-    //   }
-    // } else {
-    //   errorMessage = 'Please insert a valid JSON or XML!'
-    // }
-
-    // //Error Handdle
-    // // console.log('errorMessage', errorMessage)
-    // if (errorMessage !== '') {
-    //   alert(`Not a JSON or XML format! ${errorMessage!}`);
-    //   this.resetData()
-    // } else {
-
-    //   //TODO - insert DATA in list of list
-    //   console.log('This DATA textarea: ', this.$data.importedItem_TextValue)
-    //   console.log('This data type format: ', this.$data.fileType)
-
-
-    //   /**
-    //    * 1. validate imported file data format
-    //    * 2. transform from imported into list/items/ for all 3 cases
-    //    * 3. add importedData to listOfLists
-    //    * 4. based on transform data type check if is not duplicated info (merge if lists exist)
-    //    * 5. export all import all should show the same data
-    //    */
-
-    //   //CASE list of lists
-    //   const dataToUse = this.$data.importedItem_TextValue;
-    //   if (this.$data.fileType === 'JSON') {
-        
-    //     console.log('Length: ', dataToUse.items)
-    //     if (dataToUse.items) {
-    //       console.log('iteme')
-    //       dataToUse.items.forEach((element:ItemInterface): void => {
-    //         console.log(element)
-    //         const listInLists = this.listOfLists.listOfLists.findIndex((el:ListInterface) => el.nameOf === element.category)!
-  
-    //         ///////////////////////////////////////////////////
-    //         //ISSUE CAND SE CREAZA LISTA PE BAZA ITEM.CATEGORY si se da doar item category fara lista
-    //         ///////////////////////////////////////////////////
-  
-    //         if (listInLists < 0) {
-    //           this.createList(element.category);
-    //         }
-  
-    //         //WORKS this under
-    //         // if (this.listOfLists.listOfLists[listInLists].items.findIndex((item:ItemInterface) => item.nameOf === element.nameOf) < 0) {
-    //           // this.listOfLists.listOfLists[listInLists].items.push(element)
-    //           let data = {
-    //             index: +listInLists,
-    //             item: element,
-    //             idForList: uuidv4()
-    //           }
-    //           this.listOfLists.addItemWithCheckOfList(data);
-    //           // this.listOfLists.addItemInExistingListAction(data)
-    //           this.createItems(element)
-    //         // }
-    //       })
-    //     } else {
-    //       dataToUse.forEach((element:ListInterface|ItemInterface) => {
-    
-    //         console.log('Element: ', element)
-    //         const indexOFExistingListInListsOfList = this.listOfLists.listOfLists.findIndex((el:ListInterface) => el.nameOf === element.nameOf)
-    //         console.log('indexOFExistingListInListsOfList: ', indexOFExistingListInListsOfList)
-    
-    //         //CASE LISTS - too
-    //         if (indexOFExistingListInListsOfList >= 0) {
-    //           console.log('Exista')
-    //           console.log('Lista indexOFExistingListInListsOfList:', this.listOfLists.listOfLists[indexOFExistingListInListsOfList])
-    //           const newList:ListInterface = this.listOfLists.listOfLists.find((el:ListInterface) => el.nameOf === element.nameOf)!
-    //           const setTypeToElement = element as ListInterface
-              
-    //           setTypeToElement.items.forEach((u:ItemInterface) => {
-    //             if ((newList.items.findIndex((el) => el.nameOf === u.nameOf)) < 0) {
-    //               this.createItems(u)
-    //               newList.items.push(u)
-    //             }
-    //           });
-    //         } else {
-    //           //Daca nu exista lista se creaza si se pun itemele aferente
-    //           this.createList(element.nameOf);
-    //           const cloneList = cloneDeep(element as ListInterface)
-    
-    //           const newList:ListInterface = this.listOfLists.listOfLists.find((el:ListInterface) => el.nameOf === element.nameOf)!
-    //           cloneList.items.forEach((el:ItemInterface) => {
-    //             this.createItems(el)
-    //             newList.items.push(el)
-    //           })
-    //         }
-    //       });
-          
-    //     }
-    //   } else if (this.$data.fileType === 'XML') {
-    //     console.log('NEED WORK DATA AS XML')
-    //   }
-
-    //   //MUTATIONS, build LISTS
-    //   // await this.filesList.addFileToListAction({
-    //   //   nameOfFile: this.$data.importedItem_Name,
-    //   //   listNameOfItem: this.$data.importedItem_ListName,
-    //   //   textValueOfItem: this.$data.importedItem_TextValue,
-    //   //   fileTypeOfItem: this.$data.fileType
-    //   // })
-    //   // .then(() =>  this.resetData())
-    // }
 
     this.$data.loadingData = false;
     this.$data.dialog = false;

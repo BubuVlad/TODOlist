@@ -24,8 +24,6 @@ export default class DataAdapter implements AdapterType {
       })
     })
 
-    console.log('PROMISES ARRAY: ', promises)
-
     const types:Array<AcceptedDataTypes|false> = (await Promise.all(promises)) as Array<AcceptedDataTypes|false>
 
     const foundTypes:Array<AcceptedDataTypes|false> = types.filter(type => type !== false)!
@@ -33,17 +31,7 @@ export default class DataAdapter implements AdapterType {
     if ( foundTypes.length > 0 && foundTypes[0] !== false) {
       result = foundTypes[0]
     }
-    console.log('Found TYPES: ', foundTypes)
 
-    // typesArray.forEach((type) => {
-    //   const typeOrError = await this.isType({type, data})
-    //   if (!(typeOrError instanceof MyError) && typeOrError === true) {
-    //     result = type
-    //     found = true
-    //   } else if (found === false){
-    //     result = new MyError('Not supported type!');
-    //   }
-    // })
     return result
   }
   
