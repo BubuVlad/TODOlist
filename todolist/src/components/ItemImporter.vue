@@ -27,32 +27,6 @@
                     v-model='importedItem_TextValue'
                   ></v-textarea>
                 </v-col>
-                  <!-- <v-col
-                  cols="12"
-                  sm="6"
-                >
-                  <v-text-field
-                    label="File nameOf"
-                    solo
-                    v-model="importedItem_nameOf"
-                  ></v-text-field>
-                </v-col> -->
-                <!-- <v-col
-                  cols="12"
-                  sm="6"
-                > -->
-                 <!-- <v-text-field
-                    label="List nameOf"
-                    solo
-                    v-model="importedItem_ListnameOf"
-                    :rules="inputRules[0](importedItem_ListnameOf)"
-                  ></v-text-field> -->
-                  <!-- <v-text-field
-                    label="List nameOf"
-                    solo
-                    v-model="importedItem_ListnameOf"
-                  ></v-text-field> -->
-                <!-- </v-col> -->
                 <v-col
                   cols="12"
                 >
@@ -95,7 +69,6 @@ import DataAdapter from '../plugins/DataAdapter'
 @Component
 export default class ItemImporterForFileList extends Vue {
 
-  // filesList: FileList = getModule(FileList, this.$store);
   listOfLists: ListOfLists = getModule(ListOfLists, this.$store)
   todoItems: TodoListModule = getModule(TodoListModule, this.$store);
   
@@ -123,7 +96,6 @@ export default class ItemImporterForFileList extends Vue {
   }
 
   async createItems(data:ItemInterface): Promise<void> {
-    console.log("Create ITEMS with: ", data)
     await this.todoItems.updateTodoList({
       nameOf: data.nameOf,
       category: data.category,
@@ -216,7 +188,46 @@ export default class ItemImporterForFileList extends Vue {
           this.populateLists(items)
         }
       })
-    } 
+    } else if ( response.type === AcceptedDataTypes.XML ) {
+      console.log('Handdle xml')
+      console.log('XML DATA: ', response.data)
+      // for (let key in response.data) {
+      //   console.log(key)
+      // }
+      const newResponseBuild = [{}];
+      // for(let key in response.data) {
+      //   const data = {
+      //     key: response.data.key
+      //   }
+      //   console.log('DAta:', data)
+      // }
+      // let obj = [{
+
+      // }]
+      for( let [key, value] of Object.entries(response.data)) {
+        // obj[key] = value
+        console.log("Array: ", value)
+        // for (let i = 0; i < value.length; i++) {
+        //   console.log(value[i])
+        //   obj[i][key] = value[i]
+        //   // newResponseBuild.push({prop: value[i]})
+          
+        // }
+      }
+
+      console.log(newResponseBuild)
+      // console.log('newResponseBuild', newResponseBuild)
+      // response.data.forEach((dataSet:any, index:number) => {
+      //   const done:boolean  = dataSet[index];
+      //   const id:string = dataSet[index];
+      //   const nameOf:string = dataSet[index];
+      //   const items:ItemInterface[]= dataSet[index];
+        
+      // })
+  // console.log('Response.data: ', response.data)
+
+     
+    }
 
     this.$data.loadingData = false;
     this.$data.dialog = false;
